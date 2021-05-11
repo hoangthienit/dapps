@@ -1,20 +1,21 @@
-pragma solidity ^0.8.0;
+pragma solidity ^0.5.11;
 
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/contracts/utils/math/SafeMath.sol";
-contract LibrariesSimple{
-    using SafeMath for uint; 
+contract EventSimple {
+    mapping(address => uint) public tokenBalance;
     
-    mapping (address => uint) public tokenBalance;
-     
-
     constructor() public{
-        tokenBalance[msg.sender] = 1;
-        
+        tokenBalance[msg.sender] = 100;
     }
     
+    event tokensSend(address _from, address _to, uint _amount);
+    
     function sendToken(address _to, uint _amount) public returns(bool){
-        tokenBalance[msg.sender] = tokenBalance[msg.sender].sub(_amount);
-        tokenBalance[_to] = tokenBalance[_to].add(_amount);
+        require(tokenBalance[msg.sender] >= _amount, "Not enough tokens");
+        assert(tokenBalance[_to] + _amount >= tokenBalance[_to]);
+        assert(tokenBalance[msg.sender] - _amount <= tokenBalance[msg.sender]);
+        tokenBalance[_to] += _amount;
+        
+        emit tokensSend(msg.sender, _to, _amount);
         
         return true;
     }
